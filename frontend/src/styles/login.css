@@ -1,0 +1,37 @@
+.iemail{
+    width:300px;
+    font-size: 20px;
+    border-color: #ccc;
+    border-radius: 5px;
+    height: 35px;
+    box-sizing: content-box;
+}
+
+.titleLoginPage{
+text-transform: uppercase;
+font-size: 16px;
+color: #999;
+font-weight: bold;
+line-height: 20px;
+}
+.loginBtnInLogin{
+border-color: #ccc;
+width: 90px;
+border-radius: 5px;
+text-shadow: 0 -1px 0 #c83400;
+font-size: 18px;
+background: #ff652f;
+font-weight: bold;
+color: #fff;
+
+/* border-color: #ccc;
+    border-radius: 5px;
+    font-size: 18px;
+    color: #fff;
+    font-weight: bold;
+    background: #ff652f;
+    text-shadow: "0 -1px 0 #c83400"; */
+}
+
+ /* marginTop: "10px", marginBottom: "10px", 
+color: "#fff",float:"left", */

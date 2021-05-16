@@ -1,0 +1,36 @@
+.dashboardBlock{
+    display: inline-block;
+    margin: 10px;
+    border:1px solid #eee;
+    box-shadow: 0px 2px 2px #ccc;
+    width: 600px;
+    height: 120px;
+}
+.blockhrLineDash{
+    margin: 5px;
+    color: #ccc;
+    margin: 30px;
+    border-width: 2px;
+    width: 550px;
+}
+.settleUpBtn{
+    color: #ffffff;
+    background: #5bc5a7;
+    float: right;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 25px;
+    font-weight: bold;
+}
+.settleUpBtn:hover{
+    color: #ffffff;
+    text-decoration: none;
+}
+.dashboardBlockTwo{
+    color:#414a4c;
+    font-size: 17px;
+}
+.dashboardVerLine{
+    border-right: 2px solid #ccc;
+    height: 500px;
+}

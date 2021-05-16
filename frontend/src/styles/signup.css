@@ -1,0 +1,45 @@
+.body{
+    background-color: #eee;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.title{
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #999;
+    font-weight: bold;
+}
+
+.name{
+    font-size: 24px;
+    color: #353839;
+}
+
+.iuname{
+    border-color: #ccc;
+    border-radius: 5px;
+    font-size: 32px;
+    height: 42px;
+    box-sizing: content-box;
+    width: 355px;
+}
+
+.iemail{
+    border-color: #ccc;
+    border-radius: 5px;
+    font-size: 20px;
+    height: 30px;
+    box-sizing: content-box;
+    width: 355px;
+}
+
+.submitBtn{
+    border-color: #ccc;
+    border-radius: 5px;
+    font-size: 18px;
+    color: #fff;
+    font-weight: bold;
+    background: #ff652f;
+    text-shadow: "0 -1px 0 #c83400";
+}
+

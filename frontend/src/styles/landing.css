@@ -1,0 +1,65 @@
+body {
+    /* margin: 0; */
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.navbar{
+    background-color: #1CC29F;
+    border-radius: 10px;
+    height: 70px;
+}
+.navbar-brand{
+    text-align: justify;
+    color: #ffffff;
+    /* padding: 4.5px 20px 8.5px; */
+    margin-left: -20px;
+    padding: 4px 30px 20px;
+    line-height: 1;
+    font-size:40px;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    /* .nav-link{
+        color: #ffffff;
+    } */
+}
+.nav-link{
+    text-align: initial;
+    text-decoration: none;
+    padding-top: 10px;
+    color: #ffffff;
+    font-size:40px;
+}
+.loginBtn{
+    margin-right: 5px;
+    float:right;
+    color: #5bc5a7;
+    background: #ffffff;
+    font-weight: 700;
+    font-size: 20px;
+    border-color: #ccc;
+    border-radius: 5px;
+    /* padding: 1px 30px 2px; */
+    text-decoration: none;
+}
+.signupBtn{
+    padding-left: 5px;
+    float:right;
+    color: #ffffff;
+    background: #5bc5a7;
+    font-weight: 700;
+    font-size: 20px;
+    border-color: #ccc;
+    border-radius: 5px;
+    background-size: 25px;
+    text-decoration: none;
+}
+.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}

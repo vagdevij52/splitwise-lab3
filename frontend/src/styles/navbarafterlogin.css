@@ -1,0 +1,56 @@
+.navbar{
+    background-color: #1CC29F;
+    border-radius: 10px;
+    height: 70px;
+}
+.navbar-brand{
+    text-align: justify;
+    color: #ffffff;
+    /* padding: 4.5px 20px 8.5px; */
+    margin-left: -20px;
+    padding: 4px 30px 20px;
+    line-height: 1;
+    font-size:40px;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    /* .nav-link{
+        color: #ffffff;
+    } */
+}
+.nav-link{
+    text-align: initial;
+    text-decoration: none;
+    padding-top: 10px;
+    color: #ffffff;
+    font-size:40px;
+}
+.nav-link:hover{
+    color: white;
+}
+.profile{
+    color: #ffffff;
+    background: #5bc5a7;
+    font-weight: 700;
+    font-size: 16px;
+    border-color: #ccc;
+    border-radius: 5px;
+}
+.divider{
+    width:5px;
+}
+
+.dropdownItem{
+    font-size: 14px
+}
+.dropdownItem:hover{
+    background-color:#5bc5a7;
+    color: white;
+}
+.logo{
+    width:20px;
+    height:20px;
+}
+
+.drpDownNav{
+    right:50px
+}
