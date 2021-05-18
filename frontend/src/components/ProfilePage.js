@@ -113,13 +113,59 @@ const ProfilePage = (props) =>{
     var [language, setLanguage] = useState(onloadLanguage);
     var [avatar, setAvatar] = useState(onloadAvatar);
 
-    const[imageSelected, setImageSelected] = useState("https://res.cloudinary.com/dh9bmhy5e/image/upload/v1617323881/hnspehnqrf6i8e57uhpy.png");
-
+    const[imageSelected, setImageSelected] = useState("");
     const [isUpdated,setIsUpdated] = useState("");
 
         const handleEditClick = (e) => {
         e.preventDefault();
         console.log(e.traget.username.value);
+    }
+
+    useEffect(() => {
+        console.log("Token being set:: "+token);
+        const requestOptions = {
+            method: 'GET',
+           headers: { 'Content-Type': 'application/json' ,'Authorization': token},
+          }
+        axios.get("http://localhost:4000/api/profile",requestOptions)
+        .then(response=>{
+            if(response.status === 200){
+              console.log("Profile page::Get user profile");
+              //loadSuccess();
+              setUsername(response.data.username);
+              setEmail(response.data.email);
+              setAvatar(response.data.avatar);
+              setPhone(response.data.phone);
+              setDefaultCurrency(response.data.defaultCurrency);
+              setTimezone(response.data.timezone);
+              setLanguage(response.data.language);
+
+              //history.push('/profile');
+            }
+          }).catch(err=>{
+            //User has no profile.Needs to create new profile
+            console.log(err);
+            setUsername(user.username);
+            setEmail(user.email);
+        });
+	}, []);
+
+
+
+
+    const uploadImage = (files) =>{
+        console.log(files[0]);
+        console.log("Uploading to cloudinary");
+        var formData = new FormData();
+        formData.append("file", imageSelected);
+        formData.append("upload_preset", "gvfsmpgq");
+        axios.post("https://api.cloudinary.com/v1_1/dh9bmhy5e/image/upload", formData)
+        .then((response) =>{
+            console.log(JSON.stringify(response.data));
+            var strRes = JSON.stringify(response.data);
+            var data = JSON.parse(strRes);
+            setAvatar(data.secure_url);
+        });
     }
 
     const handleSaveProfile = async (e) => {
@@ -149,23 +195,45 @@ const ProfilePage = (props) =>{
         };
     
         (async () => {
+            // Mutation update profile
+            console.log(await qlQuery(
+                "mutation _($currencyProfileInput: CurrencyProfileInput) {updateDefaultCurrency(profile: $currencyProfileInput) {email defaultCurrency}}",
+                {"currencyProfileInput": {"email": email, "defaultCurrency": value}} //variables need to passed as the second argument
+            ));
+
             //Query users
-            console.log(await qlQuery(
-                "{users{id email}}")
-            );
-            // Mutation addUser
-            console.log(await qlQuery(
-                "mutation _($userInput: UserInput) {addUser(user: $userInput) {id email}}",
-                {"userInput": {"email": "user@gmail.com", "password": "pwd"}} //variables need to passed as the second argument
-            ));
-            // Mutation add order
-            console.log(await qlQuery(
-                "mutation {addOrder(itemId:10) {id itemId}}",
-            ));
+            // console.log(await qlQuery(
+            // "{profile{email}}")
+            // );
         })();
 
 
-
+        const headers = {
+            'Content-Type': 'application/json' ,
+            'Authorization': token
+        }
+        const body = {
+           'handle': handle,'username': username,'email':email,'avatar':avatar,'phone':phone,'defaultCurrency':value,'timezone':timezone,'language':language
+          }
+          console.log("Requestoptions: "+JSON.stringify(body));
+        axios.post("http://localhost:4000/api/profile",body,{
+            headers: headers
+        })
+        .then(response=>{
+            if(response.status === 200){
+              console.log("Profile page::Saved profile in Database");
+              setUsername(response.data.username);
+              setEmail(response.data.email);
+              setAvatar(response.data.avatar);
+              setPhone(response.data.phone);
+              setDefaultCurrency(response.data.defaultCurrency);
+              setTimezone(response.data.timezone);
+              setLanguage(response.data.language);
+              //loadSuccess();              
+          }
+          }).catch(err=>{
+            console.log(err);
+        });
 
 
         // console.log("Updating the profile");
@@ -206,7 +274,7 @@ const ProfilePage = (props) =>{
             <Row>
             <Image 
             cloudName="dh9bmhy5e" 
-            publicId={imageSelected} 
+            publicId={avatar} 
             style={{width:200}} 
             />
             </Row>
@@ -215,7 +283,11 @@ const ProfilePage = (props) =>{
                 <input 
                 type="file"
                 onChange={(e)=>setImageSelected(e.target.files[0])} 
-                style={{borderColor:"#ccc",fontSize:"15px",color:"#fff",backgroundColor:"#5bc5a7",fontWeight:"bold",borderRadius:"5px"}} />
+                style={{borderColor:"#ccc",fontSize:"13px",borderRadius:"5px"}} />
+            </Row>
+            <Row><button type="button" style={{background:"#5bc5a7",fontSize:"13px",color:"#fff",borderRadius:"5px"}} onClick={uploadImage}>
+            Upload Image
+            </button>
             </Row>
             </Col>
             <Col style={{fontSize:"15px"}}>

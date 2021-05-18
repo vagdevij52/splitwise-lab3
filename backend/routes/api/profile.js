@@ -4,7 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-
+const {performance} = require('perf_hooks');
 const keys= require('../../config/keys');
 //Load user model
 const User = require('../../models/User');
@@ -57,7 +57,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req,res)=>{
     if(req.body.defaultCurrency) profileFields.defaultCurrency = req.body.defaultCurrency;
     if(req.body.timezone) profileFields.timezone = req.body.timezone;
     if(req.body.language) profileFields.language = req.body.language;
-
+    var t0 = performance.now();
     Profile.findOne({user: req.user.id })
     .then(profile =>{
         if(profile){
@@ -85,5 +85,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req,res)=>{
             })
         }
     })
+    var t1 = performance.now();
+    console.log("Call to updateDefaultCurrency() REST API took " + (t1 - t0) + " milliseconds.")        
     });
 module.exports = router;

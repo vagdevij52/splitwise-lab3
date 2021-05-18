@@ -1,4 +1,5 @@
 const Profile = require("../../models/Profile")
+const {performance} = require('perf_hooks');
 
 module.exports = {
     profile: async args => {
@@ -16,6 +17,7 @@ module.exports = {
   },
 
   updateDefaultCurrency: async args => {
+    var t0 = performance.now();
     try {
       const { email, defaultCurrency } = args.profile
       const profileFetched = await Profile.findOne({email:email});
@@ -32,7 +34,9 @@ module.exports = {
         //     { new: true }
         // )
         // .then(profile => res.json(profile) ); 
-        console.log("Updated prof "+ JSON.stringify(updatedProf));    
+        console.log("Updated prof "+ JSON.stringify(updatedProf)); 
+         var t1 = performance.now();
+         console.log("Call to updateDefaultCurrency() API took " + (t1 - t0) + " milliseconds.")        
         return {email: updatedProf.email, defaultCurrency: updatedProf.defaultCurrency}
     }
     } catch (error) {
@@ -46,6 +50,17 @@ module.exports = {
       const profileFetched = await Profile.findOne({email:email});
       console.log("profileFetched: "+profileFetched);
       return {...profileFetched._doc}
+    }catch(error){
+      throw error
+    }
+  },
+
+  getGroup: async args => {
+    try{
+      const { email } = args.profile
+      const groupFetched = await Group.find({"members":{$elemMatch:{email: email, isProcessed:"N", isAccepted:"N"}}},{adminId: 1, groupName:1, 'members.$':1})
+      console.log("groupFetched: "+groupFetched);
+      return {...groupFetched._doc}
     }catch(error){
       throw error
     }

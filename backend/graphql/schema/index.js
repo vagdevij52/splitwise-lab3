@@ -93,6 +93,7 @@ module.exports = buildSchema(`
   type Query {
     profile:[Profile!]
     getProfile(profile:EmailProfileInput): Profile
+    getGroup(email:EmailProfileInput):Group
   }
 
   type Mutation {

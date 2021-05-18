@@ -77,6 +77,40 @@ const CreateANewGroupPage = () => {
             setGroupNameInValid("A group with same name already exists.Please provide a unique name");
             console.log(err);
         });
+
+
+
+        //graphql way
+        // const qlQuery = async (query, variables = {}) => {
+        //     const resp = await fetch("http://localhost:4000", {
+        //         method: 'POST',
+        //         headers: {'Content-Type': 'application/json'},
+        //         body: JSON.stringify({query, variables}),
+        //     });
+        //     return (await resp.json()).data;
+        // };
+    
+        // (async () => {
+        //     const params = new URLSearchParams();
+        //     params.append('groupName',createGroupName);
+        //     var grpN = params.get('groupName');
+        //     for(var i=0;i<fields.length;i++){
+        //     params.append('emails', fields[i].value);
+        //     console.log(params.get('emails'));
+        //     }
+        //     params.append('emails',userLocalStorage.email);
+        //     // Mutation create group
+        //     console.log(await qlQuery(
+        //         "mutation _($createGroupInput: CreateGroupInput) {createGroup(creategroup: $CreateGroupInput) {params}}",
+        //         {"createGroupInput": {"params": params}} //variables need to passed as the second argument
+        //     ));
+
+        //     //Query users
+        //     console.log(await qlQuery(
+        //     "{profile{email}}")
+        //     );
+        // })();
+
     }
 
     const uploadImage = (files) =>{

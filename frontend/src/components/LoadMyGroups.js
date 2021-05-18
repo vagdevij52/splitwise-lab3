@@ -52,6 +52,22 @@ const LoadMyGroups = () =>{
             setShowNoMyGrpMsg("You are not a part of any group!");
         });
 
+        //graphql way
+        // const qlQuery = async (query, variables = {}) => {
+        //     const resp = await fetch("http://localhost:4000", {
+        //         method: 'POST',
+        //         headers: {'Content-Type': 'application/json'},
+        //         body: JSON.stringify({query, variables}),
+        //     });
+        //     return (await resp.json()).data;
+        // };
+    
+        // (async () => {
+        //     //Query group details
+        //     console.log(await qlQuery(
+        //         "{getGroup{email}}")
+        //         );
+        // })();
         
     }
     loadOnStartMyGroups();
