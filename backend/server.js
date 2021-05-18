@@ -8,7 +8,7 @@ const passport = require('passport');
 const {ApolloServer, gql} = require('apollo-server');
 //const { ApolloServer } = require('apollo-server-express');
 const path = '/graphql';
-//const users = require('./routes/api/users');
+const users = require('./routes/api/users');
 const profile = require('./routes/api/profile');
 const group = require('./routes/api/group');
 const billtransactions = require('./routes/api/billtransactions');
@@ -46,7 +46,7 @@ require('./config/passport')(passport);
 
 //Use routes
 
-//app.use('/api/users', users);
+app.use('/api/users', users);
 app.use('/api/profile', profile);
 app.use('/api/group', group);
 app.use('/api/billtransactions', billtransactions);
