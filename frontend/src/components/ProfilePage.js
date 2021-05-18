@@ -1,16 +1,17 @@
-import React from 'react';
-import  { useEffect } from "react";
+import React, {Component} from 'react';
+import  { useEffect, state } from "react";
 import NavbarAfterLogin from './NavbarAfterLogin';
 import Form from "react-validation/build/form";
 import { useState} from "react";
+import {Redirect} from 'react-router';
 import axios from 'axios';
-import setProfile from '../actions/profileActions';
 import styled from 'styled-components'; 
 import { FormControl,Modal,Container,Row, Col,Button} from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import {useHistory} from "react-router-dom";
 import {Image} from "cloudinary-react";
-import {  useSelector,useDispatch } from 'react-redux';
-
+import {GraphQLClient} from 'graphql-request';
+import {TextField, MenuItem} from '@material-ui/core';
 
 
 const Styles = styled.div`
@@ -61,96 +62,68 @@ const Styles = styled.div`
 }
 
 `;
+const currencies = [
+    {
+      value: "USD",
+      label: "usd"
+    },
+    {
+      value: "EUR",
+      label: "eur"
+    },
+    {
+      value: "BTC",
+      label: "btc"
+    },
+    {
+      value: "JPY",
+      label: "jpy"
+    }
+];
 
 const ProfilePage = (props) =>{
 
-    var userLocalStorage = JSON.parse(localStorage.getItem("user"));
-    const token = userLocalStorage.token;
-    const storeUsername = useSelector((state) => state.profileReducer.username);
-    const storeEmail = useSelector((state) => state.profileReducer.email);
-    const storeAvatar = useSelector((state) => state.profileReducer.avatar);
-    const storePhone = useSelector((state) => state.profileReducer.phone);
-    const storeDefaultCurrency = useSelector((state) => state.profileReducer.defaultCurrency);
-    const storeTimezone = useSelector((state) => state.profileReducer.timezone);
-    const storeLanguage = useSelector((state) => state.profileReducer.language);
-
-
-    const[noProfileError, setNoProfileError] = useState(false);
-    const[noProfileErrorMsg, setNoProfileErrorMsg] = useState("");
-    const[profileCreatedMsg,setProfileCreatedMsg] = useState("");
-    const[noAvatarMsg, setAvatarMsg] = useState("");
-    const[noPhoneMsg, setNoPhoneMsg] = useState("");
-    const[noDefaultCurrMsg, setNoDefaultCurrMsg] = useState("");
-    const[noTimezoneMsg, setNoTimezoneMsg] = useState("");
-    const[noLanguageMsg, setNoLanguageMsg] = useState("");
-
-    const noProfileRedirectProfilePage = () =>{
-        history.push("/profile");
-    }
-    useEffect(() => {
-        console.log("Token being set:: "+token);
-        const requestOptions = {
-            method: 'GET',
-           headers: { 'Content-Type': 'application/json' ,'Authorization': token},
-          }
-        axios.get("http://localhost:4000/api/profile",requestOptions)
-        .then(response=>{
-            if(response.status === 200){
-              console.log("Profile page::Get user profile");
-              //loadSuccess();
-              setUsername(response.data.username);
-              setEmail(response.data.email);
-              setAvatar(response.data.avatar);
-              setPhone(response.data.phone);
-              setDefaultCurrency(response.data.defaultCurrency);
-              setTimezone(response.data.timezone);
-              setLanguage(response.data.language);
-
-              dispatch(setProfile(response.data.username,response.data.email,response.data.avatar,response.data.phone,response.data.defaultCurrency,response.data.timezone,response.data.language));
-              //history.push('/profile');
-            }
-          }).catch(err=>{
-            //User has no profile.Needs to create new profile
-            console.log(err);
-            setUsername(userLocalStorage.username);
-            setEmail(userLocalStorage.email);
-            noProfileRedirectProfilePage();
-            setNoProfileError(true);
-            setNoProfileErrorMsg("Please first create a profile");
-        });
-	}, []);
-
-    
-
-    const dispatch = useDispatch();
-    const history = useHistory();
-
+     // State for the input
+    const [task, setTask] = useState("");
+    const [value, setValue] = React.useState("");
+    var user = JSON.parse(localStorage.getItem("user"));
+    const token = user.token;
+    const API_URL = "http://localhost:3001/";
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    //console.log("User from local storage in Profile page: "+user.username);
 
-    const handle = userLocalStorage.username;
-    var [username, setUsername] = useState("");
-    var [email, setEmail] = useState("");
-    var [avatar, setAvatar] = useState("");
-    var [phone, setPhone] = useState("");
-    var [defaultCurrency, setDefaultCurrency] = useState("");
-    var [timezone, setTimezone] = useState("");
-    var [language, setLanguage] = useState("");
+     var onloadUsername = user.username;
+     var onloadEmail = user.email;
 
-    const[imageSelected, setImageSelected] = useState("");
-    const[imagePublicUrl, setImagePublicUrl] = useState("");
+    var onloadPhone = user.phone;
+    var onloadDefaultCurrency = user.defaultCurrency;
+    var onloadTimezone = user.timezone;
+    var onloadLanguage = user.language;
+    var onloadAvatar = user.avatar;
+
+    const handle = user.username;
+    var [username, setUsername] = useState(onloadUsername);
+    var [email, setEmail] = useState(onloadEmail);
+    var [phone, setPhone] = useState(onloadPhone);
+    var [defaultCurrency, setDefaultCurrency] = useState(onloadDefaultCurrency);
+    var [timezone, setTimezone] = useState(onloadTimezone);
+    var [language, setLanguage] = useState(onloadLanguage);
+    var [avatar, setAvatar] = useState(onloadAvatar);
+
+    const[imageSelected, setImageSelected] = useState("https://res.cloudinary.com/dh9bmhy5e/image/upload/v1617323881/hnspehnqrf6i8e57uhpy.png");
 
     const [isUpdated,setIsUpdated] = useState("");
 
-    const handleEditClick = (e) => {
+        const handleEditClick = (e) => {
         e.preventDefault();
         console.log(e.traget.username.value);
     }
 
-    const uploadImage = (files) =>{
-        console.log(files[0]);
+    const handleSaveProfile = async (e) => {
+        e.preventDefault();
         console.log("Uploading to cloudinary");
         var formData = new FormData();
         formData.append("file", imageSelected);
@@ -160,86 +133,68 @@ const ProfilePage = (props) =>{
             console.log(JSON.stringify(response.data));
             var strRes = JSON.stringify(response.data);
             var data = JSON.parse(strRes);
-            setAvatar(data.secure_url);
+            setImageSelected(data.secure_url);
         });
-    }
+        console.log(e[0]);
 
-    const handleSaveProfile = (e) => {
-        e.preventDefault();
-        console.log("username: "+username);
-        //if user does NOT input values then use store values for axios call
 
-        // if(!username){
-        //     setUsername(storeUsername);
+        //graphql way
+        const qlQuery = async (query, variables = {}) => {
+            const resp = await fetch("http://localhost:4000", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({query, variables}),
+            });
+            return (await resp.json()).data;
+        };
+    
+        (async () => {
+            //Query users
+            console.log(await qlQuery(
+                "{users{id email}}")
+            );
+            // Mutation addUser
+            console.log(await qlQuery(
+                "mutation _($userInput: UserInput) {addUser(user: $userInput) {id email}}",
+                {"userInput": {"email": "user@gmail.com", "password": "pwd"}} //variables need to passed as the second argument
+            ));
+            // Mutation add order
+            console.log(await qlQuery(
+                "mutation {addOrder(itemId:10) {id itemId}}",
+            ));
+        })();
+
+
+
+
+
+        // console.log("Updating the profile");
+        // const headers = {
+        //     'Content-Type': 'application/json' ,
+        //     'Authorization': token
         // }
+        // const body = {
+        //    'handle': handle,'username': username,'email':email,'avatar':avatar,'phone':phone,'defaultCurrency':defaultCurrency,'timezone':timezone,'language':language
+        //   }
+        //   console.log("Requestoptions: "+JSON.stringify(body));
 
-        if(!email){
-            setEmail(userLocalStorage.email);
-        }
-        if(!avatar){
-            setAvatarMsg("Please upload an image")
-        }
-        if(!phone){
-            setNoPhoneMsg("Please provide phone number");
-        }
-        if(!defaultCurrency){
-            setNoDefaultCurrMsg("Please provide currency");
-        }
-        if(!timezone){
-            setNoTimezoneMsg("Please provide timezone");
-        }
-        if(!language){
-            setNoLanguageMsg("Please provide a language")
-        }
-        
-        console.log("Updating the profile with token: "+token);
-        console.log("Handle: "+handle);
-        console.log("Username: "+username);
-        console.log("Email: "+email);
-        console.log("Avatar: "+avatar);
-        console.log("Phone: "+phone);
-        console.log("Def Curr: "+defaultCurrency);
-        console.log("Timezone: "+timezone);
-        console.log("Language: "+language);
-        const headers = {
-            'Content-Type': 'application/json' ,
-            'Authorization': token
-        }
-        const body = {
-           'handle': handle,'username': username,'email':email,'avatar':avatar,'phone':phone,'defaultCurrency':defaultCurrency,'timezone':timezone,'language':language
-          }
-          console.log("Requestoptions: "+JSON.stringify(body));
-        axios.post("http://localhost:4000/api/profile",body,{
-            headers: headers
-        })
-        .then(response=>{
-            if(response.status === 200){
-              console.log("Profile page::Saved profile in Database");
-              setNoProfileErrorMsg("");
-              setProfileCreatedMsg("Profile Created/Updated Sucessfully!");
-              setUsername(response.data.username);
-              setEmail(response.data.email);
-              setAvatar(response.data.avatar);
-              setPhone(response.data.phone);
-              setDefaultCurrency(response.data.defaultCurrency);
-              setTimezone(response.data.timezone);
-              setLanguage(response.data.language);
-
-              dispatch(setProfile(response.data.username,response.data.email,response.data.avatar,response.data.phone,response.data.defaultCurrency,response.data.timezone,response.data.language));
-              history.push("/profile");
-              //loadSuccess();              
-          }
-          }).catch(err=>{
-            console.log(err);
-        });
-        
+        // const ME_QUERY = `
+        // {
+        //     me{
+                
+        //     }
+        // }
+        // `
+        // const client = new GraphQLClient('http://localhost:4000/api/profile',{
+        //     headers: headers
+        // });
+        // const response = await client.request(ME_QUERY);
+        // console.log("Response for profile save: "+response);
     }
     return(
     <>
         <Styles>
-            <NavbarAfterLogin/>
-            <h3 style={{margin:"20px",color:"red",fontWeight:"bold"}}>{noProfileErrorMsg}</h3>
-            <h3 style={{margin:"20px",color:"#5bc5a7",fontWeight:"bold"}}>{profileCreatedMsg}</h3>
+        <NavbarAfterLogin/>
             <Container fluid="md">
             <br /><br /><br />
             <Row>
@@ -251,7 +206,7 @@ const ProfilePage = (props) =>{
             <Row>
             <Image 
             cloudName="dh9bmhy5e" 
-            publicId={avatar} 
+            publicId={imageSelected} 
             style={{width:200}} 
             />
             </Row>
@@ -260,19 +215,22 @@ const ProfilePage = (props) =>{
                 <input 
                 type="file"
                 onChange={(e)=>setImageSelected(e.target.files[0])} 
-                style={{borderColor:"#ccc",fontSize:"13px",borderRadius:"5px"}} />
-            </Row>
-            <Row><button type="button" style={{background:"#5bc5a7",fontSize:"13px",color:"#fff",borderRadius:"5px"}} onClick={uploadImage}>
-            Upload Image
-            </button>
+                style={{borderColor:"#ccc",fontSize:"15px",color:"#fff",backgroundColor:"#5bc5a7",fontWeight:"bold",borderRadius:"5px"}} />
             </Row>
             </Col>
             <Col style={{fontSize:"15px"}}>
             Your name
             <Row style={{marginLeft:"0px"}}>
-            <span style={{fontWeight:"bold"}}>{username}</span>
+            <span style={{fontWeight:"bold"}}>{onloadUsername}</span>
+            {/* <input
+            type="text"
+            name="onloadUsername"
+            value={onloadUsername}
+            readOnly
+            style={{borderColor:"#ccc",fontSize: "17px", height: "30px",borderRadius:"5px",width:"150px"}}
+            />            */}
             </Row>
-            {/* <Row style={{marginLeft:"0px"}}>
+            <Row style={{marginLeft:"0px"}}>
             <input
             type="text"
             name="username"
@@ -281,15 +239,22 @@ const ProfilePage = (props) =>{
             onChange={e=> setUsername(e.target.value)}
             style={{borderColor:"#ccc",fontSize: "17px", height: "30px",borderRadius:"5px",width:"150px"}}
             />           
-            </Row> */}
-            {/* <small><label>Enter a new value</label></small> */}
+            </Row>
+            <small><label>Enter a new value</label></small>
             <br /><br />
 
             <Row style={{marginLeft:"0px"}}>
             Your email address
             </Row>
             <Row style={{marginLeft:"0px"}}>
-            <span style={{fontWeight:"bold"}}>{email}</span>
+            {/* <input
+            type="text"
+            name="onloadEmail"
+            value={onloadEmail}
+            readOnly
+            style={{borderColor:"#ccc",fontSize: "17px", height: "30px",borderRadius:"5px",width:"150px"}}
+            />            */}
+            <span style={{fontWeight:"bold"}}>{onloadEmail}</span>
 
             </Row>
             <Row style={{marginLeft:"0px"}}>
@@ -309,7 +274,14 @@ const ProfilePage = (props) =>{
             Your phone number
             </Row>
             <Row style={{marginLeft:"0px"}}>
-            <span style={{fontWeight:"bold"}}>{phone}</span>
+            {/* <input
+            type="text"
+            name="onloadPhone"
+            value={onloadPhone}
+            readOnly
+            style={{borderColor:"#ccc",fontSize: "17px", height: "30px",borderRadius:"5px",width:"150px"}}
+            />            */}
+            <span style={{fontWeight:"bold"}}>{onloadPhone}</span>
             </Row>
             <Row style={{marginLeft:"0px"}}>
             <input
@@ -328,9 +300,16 @@ const ProfilePage = (props) =>{
             Your default currency
             </Row>
             <Row style={{marginLeft:"0px"}}>
-            <span style={{fontWeight:"bold"}}>{defaultCurrency}</span>
+            {/* <input
+            type="text"
+            name="onloadDefaultCurrency"
+            value={onloadDefaultCurrency}
+            readOnly
+            style={{borderColor:"#ccc",fontSize: "17px", height: "30px",borderRadius:"5px",width:"150px"}}
+            />            */}
+            <span style={{fontWeight:"bold"}}>{onloadDefaultCurrency}</span>
             </Row>
-            <Row style={{marginLeft:"0px"}}>
+            {/* <Row style={{marginLeft:"0px"}}>
             <input
             type="text"
             name="defaultCurrency"
@@ -340,13 +319,39 @@ const ProfilePage = (props) =>{
             style={{borderColor:"#ccc",fontSize: "17px", height: "30px",borderRadius:"5px",width:"150px"}}
             />           
             </Row>
-            <small><label>Enter a new value</label></small>
+            <small><label>Enter a new value</label></small> */}
+            <Row style={{marginLeft:"0px"}}>
+            <TextField
+            id="standard-select-currency"
+            select
+            fullWidth
+            label="Filter By"
+            InputLabelProps={{ shrink: true }}
+            margin="normal"
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            >
+            {currencies.map(option => (
+            <MenuItem key={option.value} value={option.value}>
+            {option.label}
+            </MenuItem>
+            ))}
+            </TextField>
+            </Row>
             <br /><br/>
+
             <Row style={{marginLeft:"-4px"}}>
             Your time zone
             </Row>
             <Row style={{marginLeft:"0px"}}>
-            <span style={{fontWeight:"bold"}}>{timezone}</span>
+            {/* <input
+            type="text"
+            name="onloadTimezone"
+            value={onloadTimezone}
+            readOnly
+            style={{borderColor:"#ccc",fontSize: "17px", height: "30px",borderRadius:"5px",width:"150px"}}
+            />            */}
+            <span style={{fontWeight:"bold"}}>{onloadTimezone}</span>
             </Row>
             <Row style={{marginLeft:"0px"}}>
             <input
@@ -364,7 +369,14 @@ const ProfilePage = (props) =>{
             Your language
             </Row>
             <Row style={{marginLeft:"0px"}}>
-            <span style={{fontWeight:"bold"}}>{language}</span>
+            {/* <input
+            type="text"
+            name="onloadLanguage"
+            value={onloadLanguage}
+            readOnly
+            style={{borderColor:"#ccc",fontSize: "17px", height: "30px",borderRadius:"5px",width:"150px"}}
+            />            */}
+            <span style={{fontWeight:"bold"}}>{onloadLanguage}</span>
             </Row>
             <Row style={{marginLeft:"0px"}}>
             <input
@@ -389,6 +401,12 @@ const ProfilePage = (props) =>{
                 value="Save" 
                 style={{borderColor:"#ccc",width: "90px",borderRadius: "5px",textShadow: "0 -1px 0 #c83400" ,marginTop: "10px", marginBottom: "10px", fontSize: "18px",color: "#fff",fontWeight:"bold",float:"left",background: "#ff652f"}} />
                 </Row>
+                {/* <Row>
+                <input  
+                type="reset" 
+                value="Reset" 
+                style={{borderColor:"#ccc",width: "90px",borderRadius: "5px",textShadow: "0 -1px 0 #c83400" ,marginTop: "10px", marginBottom: "10px", fontSize: "18px",color: "gray",fontWeight:"bold",float:"left",background: "#ccc"}} />
+                </Row> */}
                 </Col>
             </Row>
             </Form>
